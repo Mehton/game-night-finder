@@ -1,34 +1,53 @@
 import React, { useState, useEffect } from 'react'
 import Event from '../components/Event'
+import LocationsAPI from '../services/LocationsAPI'
 import '../css/LocationEvents.css'
 
 const LocationEvents = ({index}) => {
-    const [location, setLocation] = useState([])
+    const [location, setLocation] = useState({})
     const [events, setEvents] = useState([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const [locationData, eventsData] = await Promise.all([
+                    LocationsAPI.getLocationById(index),
+                    LocationsAPI.getEventsByLocation(index)
+                ])
+                setLocation(locationData)
+                setEvents(eventsData)
+            }
+            catch (error) {
+                console.error(error)
+            }
+            finally {
+                setLoading(false)
+            }
+        }) ()
+    }, [index])
 
     return (
         <div className='location-events'>
             <header>
                 <div className='location-image'>
-                    <img src={location.image} />
+                    <img src={location.image} alt={location.name} />
                 </div>
 
                 <div className='location-info'>
                     <h2>{location.name}</h2>
                     <p>{location.address}, {location.city}, {location.state} {location.zip}</p>
+                    <p>{location.description}</p>
                 </div>
             </header>
 
             <main>
                 {
-                    events && events.length > 0 ? events.map((event, index) =>
+                    loading ? <h2 aria-busy='true'>Loading events...</h2>
+                    : events.length > 0 ? events.map((event) =>
                         <Event
                             key={event.id}
                             id={event.id}
-                            title={event.title}
-                            date={event.date}
-                            time={event.time}
-                            image={event.image}
                         />
                     ) : <h2><i className="fa-regular fa-calendar-xmark fa-shake"></i> {'No events scheduled at this location yet!'}</h2>
                 }

@@ -1,0 +1,19 @@
+.page-not-found {
+    background-color: var(--main-color);
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.page-not-found i {
+    margin-right: 10px;
+}
+
+.page-not-found p {
+    color: white;
+    margin: 20px 0;
+}
+
+.page-not-found a[role='button'] {
+    background-color: var(--secondary-color);
+    border-color: white;
+}
